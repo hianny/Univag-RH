@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Painel do RH</h1>
+        <div class="user-info">
+            <span>Bem-vindo, {{ session['username'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
+        </div>
+    </header>
+    
+    <div class="rh-actions">
+        <form method="get" action="{{ url_for('painel_rh') }}" class="search-form">
+            <input type="text" name="nome" placeholder="Buscar por nome..." 
+                   value="{{ nome_filtro }}" class="search-input">
+            <button type="submit" class="search-btn">Buscar</button>
+            {% if nome_filtro %}
+                <a href="{{ url_for('painel_rh') }}" class="clear-search">Limpar</a>
+            {% endif %}
+        </form>
+        
+        <div class="action-buttons">
+            <button class="action-btn">Adicionar Funcionário</button>
+            <button class="action-btn">Gerar Relatórios</button>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <h2>Todos os Funcionários</h2>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        {% for coluna in colunas %}
+                            <th>{{ coluna }}</th>
+                        {% endfor %}
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for func in funcionarios %}
+                    <tr>
+                        {% for coluna in colunas %}
+                            <td>
+                                {% if coluna in ['Salario', 'RescisaoEstimada'] %}
+                                    {{ func[coluna]|currencyformat }}
+                                {% elif coluna in ['DataAdmissao', 'ProximasFerias'] %}
+                                    {{ func[coluna]|datetimeformat }}
+                                {% else %}
+                                    {{ func[coluna] }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                        <td class="actions">
+                            <button class="edit-btn">Editar</button>
+                            <button class="delete-btn">Excluir</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
