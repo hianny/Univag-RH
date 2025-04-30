@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Meu Painel</h1>
+        <div class="user-info">
+            <span>Bem-vindo, {{ funcionario['Nome'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
+        </div>
+    </header>
+    
+    <div class="funcionario-details">
+        <div class="detail-card">
+            <h2>Informações Pessoais</h2>
+            <div class="detail-row">
+                <span class="detail-label">Cargo:</span>
+                <span class="detail-value">{{ funcionario['Cargo'] }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Data de Admissão:</span>
+                <span class="detail-value">{{ funcionario['DataAdmissao']|datetimeformat }}</span>
+            </div>
+        </div>
+        
+        <div class="info-cards">
+            <div class="info-card">
+                <h2>Folha de Pagamento</h2>
+                <div class="info-value">{{ funcionario['Salario']|currencyformat }}</div>
+                <p>Próximo pagamento: 05/06/2023</p>
+                <button class="action-btn">Detalhes</button>
+            </div>
+            
+            <div class="info-card">
+                <h2>Férias</h2>
+                <div class="info-value">{{ funcionario['DiasFerias'] }} dias</div>
+                <p>Próximas férias: {{ funcionario['ProximasFerias']|datetimeformat }}</p>
+                <button class="action-btn">Solicitar</button>
+            </div>
+            
+            <div class="info-card">
+                <h2>Recisão</h2>
+                <div class="info-value">{{ funcionario['RescisaoEstimada']|currencyformat }}</div>
+                <button class="action-btn">Calcular</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
