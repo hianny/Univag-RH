@@ -1,0 +1,1 @@
+Nesse momento vou usar o pandas e depois usamos o o banco mysql
