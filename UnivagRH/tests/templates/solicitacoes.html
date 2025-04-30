@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container solicitacoes-dashboard">
+    <header class="funcionario-header">
+        <h1>Solicitações</h1>
+        <div class="user-actions">
+            <a href="{{ url_for('painel_funcionario') }}" class="back-btn">Voltar</a>
+        </div>
+    </header>
+
+    <!-- Seção de Solicitações Existentes -->
+    <div class="solicitacoes-list">
+        <h2>Suas Solicitações</h2>
+        
+        {% if solicitacoes %}
+        <div class="solicitacoes-grid">
+            {% for sol in solicitacoes %}
+            <div class="solicitacao-card status-{{ sol.status|lower }}">
+                <div class="solicitacao-header">
+                    <span class="tipo">{{ sol.tipo }}</span>
+                    <span class="status">{{ sol.status }}</span>
+                </div>
+                <div class="solicitacao-body">
+                    <p><strong>Data:</strong> {{ sol.data|datetimeformat }}</p>
+                    <a href="#" class="details-link">Ver detalhes</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-requests">Nenhuma solicitação encontrada.</p>
+        {% endif %}
+    </div>
+
+    <!-- Seção de Nova Solicitação -->
+    <div class="nova-solicitacao">
+        <h2>Nova Solicitação</h2>
+        
+        <form class="solicitacao-form" method="POST" action="/enviar_solicitacao">
+            <div class="form-group">
+                <label for="tipo_solicitacao">Tipo de Solicitação</label>
+                <select id="tipo_solicitacao" name="tipo_solicitacao" required>
+                    <option value="">Selecione...</option>
+                    <option value="ferias">Solicitação de Férias</option>
+                    <option value="banco_horas">Apuração de Banco de Horas</option>
+                    <option value="abono_falta">Abono de Falta</option>
+                    <option value="rescisao">Solicitação de Rescisão</option>
+                    <option value="falta">Registro de Falta</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="data">Data</label>
+                <input type="date" id="data" name="data" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="detalhes">Detalhes</label>
+                <textarea id="detalhes" name="detalhes" rows="4" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="anexo">Anexar Documento (Opcional)</label>
+                <input type="file" id="anexo" name="anexo">
+            </div>
+            
+            <button type="submit" class="submit-btn">Enviar Solicitação</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

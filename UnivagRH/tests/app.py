@@ -3,14 +3,14 @@ import pandas as pd
 from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'sua_chave_secreta_aqui'
+app.secret_key = 'meurhunivag'
 
 # Adicione mais usuários conforme necessário
 USUARIOS = {
     'rh': {'senha': 'rh123', 'tipo': 'rh'},
-    'func': {'senha': 'func123', 'tipo': 'funcionario'},
-    'joao': {'senha': '123', 'tipo': 'funcionario', 'id': 1},
-    'maria': {'senha': '123', 'tipo': 'funcionario', 'id': 2}
+    'hianny': {'senha': '123', 'tipo': 'funcionario', 'id': 1},
+    'joao': {'senha': '123', 'tipo': 'funcionario', 'id': 2},
+    'maria': {'senha': '123', 'tipo': 'funcionario', 'id': 3}
 }
 
 @app.template_filter('datetimeformat')
@@ -65,22 +65,39 @@ def painel_rh():
         return redirect(url_for('login'))
     
     try:
+        # Carrega dados do CSV
         df = pd.read_csv(fr'.\tests\static\csv\FuncionarioBase.csv', sep=';')
         
-        # Filtro por nome
-        nome_filtro = request.args.get('nome', '').lower()
-        if nome_filtro:
-            df = df[df['Nome'].str.lower().str.contains(nome_filtro)]
+        # Processa solicitações (simulação - substitua por dados reais)
+        solicitacoes = [
+            {'funcionario': 'João Silva', 'tipo': 'Férias', 'data': '2023-06-15', 'status': 'Pendente'},
+            {'funcionario': 'Maria Oliveira', 'tipo': 'Rescisão', 'data': '2023-05-20', 'status': 'Aprovado'},
+            {'funcionario': 'Carlos Pereira', 'tipo': 'Banco de Horas', 'data': '2023-06-01', 'status': 'Rejeitado'}
+        ]
         
-        colunas = df.columns.tolist()
-        dados = df.to_dict('records')
+        # Processa férias (calcula dias restantes)
+        hoje = datetime.now().date()
+        funcionarios_ferias = []
+        
+        for _, row in df.iterrows():
+            try:
+                data_ferias = datetime.strptime(row['ProximasFerias'], '%Y-%m-%d').date()
+                dias_restantes = (data_ferias - hoje).days
+                funcionario_data = row.to_dict()
+                funcionario_data['dias_restantes'] = dias_restantes
+                funcionarios_ferias.append(funcionario_data)
+            except:
+                continue
+        
+        # Ordena por proximidade das férias
+        funcionarios_ferias.sort(key=lambda x: x['dias_restantes'])
         
         return render_template('rh.html', 
-                            funcionarios=dados, 
-                            colunas=colunas,
-                            nome_filtro=nome_filtro)
+                            solicitacoes=solicitacoes,
+                            funcionarios_ferias=funcionarios_ferias)
+    
     except Exception as e:
-        return f"Erro ao ler o arquivo CSV: {str(e)}", 500
+        return f"Erro ao processar dados: {str(e)}", 500
 
 @app.route('/funcionario')
 def painel_funcionario():
@@ -100,6 +117,38 @@ def painel_funcionario():
                             colunas=df.columns.tolist())
     except Exception as e:
         return f"Erro ao ler o arquivo CSV: {str(e)}", 500
+    
+# Adicione no app.py
+@app.route('/solicitacoes')
+def solicitacoes():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    # Exemplo de solicitações existentes (substitua por dados reais)
+    solicitacoes_anteriores = [
+        {'tipo': 'Férias', 'data': '2023-05-15', 'status': 'Aprovada'},
+        {'tipo': 'Banco de Horas', 'data': '2023-06-20', 'status': 'Pendente'}
+    ]
+    
+    return render_template('solicitacoes.html', 
+                        funcionario=session.get('username'),
+                        solicitacoes=solicitacoes_anteriores)
+
+@app.route('/enviar_solicitacao', methods=['POST'])
+def enviar_solicitacao():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    # Aqui você processaria a solicitação
+    tipo = request.form.get('tipo_solicitacao')
+    data = request.form.get('data')
+    detalhes = request.form.get('detalhes')
+    
+    # Em um sistema real, você salvaria no banco de dados
+    print(f"Nova solicitação de {session['username']}: {tipo} para {data}")
+    
+    # Redireciona de volta com mensagem de sucesso
+    return redirect(url_for('solicitacoes', success=True))
 
 @app.route('/logout')
 def logout():

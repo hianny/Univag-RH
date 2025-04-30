@@ -1,47 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard-container">
-    <header class="dashboard-header">
-        <h1>Meu Painel</h1>
-        <div class="user-info">
-            <span>Bem-vindo, {{ funcionario['Nome'] }}</span>
+<div class="dashboard-container funcionario-dashboard">
+    <!-- Cabeçalho com boas-vindas -->
+    <header class="funcionario-header">
+        <div class="welcome-message">
+            <h1>Bem-vindo, <span class="user-name">{{ funcionario.NOME }}</span>!</h1>
+            <p>Seu portal de recursos humanos</p>
+        </div>
+        <div class="user-actions">
             <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
         </div>
     </header>
-    
-    <div class="funcionario-details">
-        <div class="detail-card">
-            <h2>Informações Pessoais</h2>
-            <div class="detail-row">
-                <span class="detail-label">Cargo:</span>
-                <span class="detail-value">{{ funcionario['Cargo'] }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Data de Admissão:</span>
-                <span class="detail-value">{{ funcionario['DataAdmissao']|datetimeformat }}</span>
-            </div>
-        </div>
+
+    <!-- Cards de Ação Rápida -->
+    <div class="quick-actions">
+        <a href="#ferias" class="action-card">
+            <div class="action-icon">🏖️</div>
+            <h3>Férias</h3>
+            <p>Solicitar ou consultar</p>
+        </a>
         
-        <div class="info-cards">
-            <div class="info-card">
-                <h2>Folha de Pagamento</h2>
-                <div class="info-value">{{ funcionario['Salario']|currencyformat }}</div>
-                <p>Próximo pagamento: 05/06/2023</p>
-                <button class="action-btn">Detalhes</button>
+        <a href="#rescisao" class="action-card">
+            <div class="action-icon">📝</div>
+            <h3>Rescisão</h3>
+            <p>Cálculo e solicitação</p>
+        </a>
+        
+        <a href="{{ url_for('solicitacoes') }}" class="action-card">
+            <div class="action-icon">📨</div>
+            <h3>Solicitações</h3>
+            <p>Acompanhar ou criar</p>
+        </a>
+    </div>
+
+    <!-- Seção de Informações Pessoais (Opcional) -->
+    <div class="personal-info">
+        <div class="info-card">
+            <h3>Seus Dados</h3>
+            <div class="info-row">
+                <span>Cargo:</span>
+                <strong>{{ funcionario.CARGO }}</strong>
             </div>
-            
-            <div class="info-card">
-                <h2>Férias</h2>
-                <div class="info-value">{{ funcionario['DiasFerias'] }} dias</div>
-                <p>Próximas férias: {{ funcionario['ProximasFerias']|datetimeformat }}</p>
-                <button class="action-btn">Solicitar</button>
+            <div class="info-row">
+                <span>Admissão:</span>
+                <strong>{{ funcionario.DATAADMISSAO|datetimeformat }}</strong>
             </div>
-            
-            <div class="info-card">
-                <h2>Recisão</h2>
-                <div class="info-value">{{ funcionario['RescisaoEstimada']|currencyformat }}</div>
-                <button class="action-btn">Calcular</button>
+            <div class="info-row">
+                <span>Salário:</span>
+                <strong>{{ funcionario.SALARIO|currencyformat }}</strong>
             </div>
         </div>
     </div>
