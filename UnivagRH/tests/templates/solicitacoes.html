@@ -1,72 +1,539 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgilizaRH - Portal do Funcionário</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+        }
 
-{% block content %}
-<div class="dashboard-container solicitacoes-dashboard">
-    <header class="funcionario-header">
-        <h1>Solicitações</h1>
-        <div class="user-actions">
-            <a href="{{ url_for('painel_funcionario') }}" class="back-btn">Voltar</a>
-        </div>
-    </header>
+        .header {
+            background-color: #2c3e50; /* Azul escuro */
+            color: #ecf0f1; /* Branco leve */
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky; /* Sticky para fixar no topo ao rolar */
+            top: 0;
+            z-index: 1000;
+        }
 
-    <!-- Seção de Solicitações Existentes -->
-    <div class="solicitacoes-list">
-        <h2>Suas Solicitações</h2>
-        
-        {% if solicitacoes %}
-        <div class="solicitacoes-grid">
-            {% for sol in solicitacoes %}
-            <div class="solicitacao-card status-{{ sol.status|lower }}">
-                <div class="solicitacao-header">
-                    <span class="tipo">{{ sol.tipo }}</span>
-                    <span class="status">{{ sol.status }}</span>
-                </div>
-                <div class="solicitacao-body">
-                    <p><strong>Data:</strong> {{ sol.data|datetimeformat }}</p>
-                    <a href="#" class="details-link">Ver detalhes</a>
-                </div>
-            </div>
-            {% endfor %}
+        .header .company-info h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #3498db; /* Azul vibrante para o nome da empresa */
+        }
+
+        .header .company-info h2 {
+            margin: 5px 0 0;
+            font-size: 1.3em;
+            color: #95a5a6;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c; /* Vermelho */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .main-content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Duas colunas: conteúdo principal e barra lateral */
+            gap: 30px;
+        }
+
+        /* --- Seções de Conteúdo --- */
+        .content-section {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px; /* Espaçamento entre as seções na mesma coluna */
+        }
+
+        .content-section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        /* --- Criar Nova Solicitação --- */
+        .create-request-section {
+            grid-column: 1 / 2; /* Ocupa a primeira coluna */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group select,
+        .form-group textarea,
+        .form-group input[type="date"] {
+            width: calc(100% - 22px); /* Ajusta a largura para padding e borda */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus,
+        .form-group input[type="date"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .submit-btn {
+            background-color: #27ae60; /* Verde para ação de enviar */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: auto; /* Ajusta a largura ao conteúdo */
+        }
+
+        .submit-btn:hover {
+            background-color: #229a56;
+            transform: translateY(-2px);
+        }
+
+        /* --- Notificações --- */
+        .notifications-section {
+            grid-column: 1 / 2; /* Ocupa a primeira coluna */
+        }
+
+        .notifications-container {
+            background-color: #fcfcfc;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.03);
+            margin-top: 20px; /* Espaço do título da seção */
+        }
+
+        .notifications-container h3 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 10px;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+            color: #27ae60; /* Verde para sucesso */
+        }
+
+        .notification-icon.warning {
+            color: #f39c12; /* Laranja para pendente */
+        }
+
+        .notification-icon.error {
+            color: #e74c3c; /* Vermelho para rejeitado/erro */
+        }
+
+        .notification-content {
+            flex-grow: 1;
+        }
+
+        .notification-content p {
+            margin: 0;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .notification-content .status {
+            font-weight: bold;
+        }
+
+        /* --- Detalhes Pessoais (Coluna Lateral) --- */
+        .personal-details-section {
+            grid-column: 2 / 3; /* Ocupa a segunda coluna */
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .personal-details-section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            background-color: #ecf0f1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            border: 3px solid #3498db;
+        }
+
+        .view-details-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .view-details-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Popup de Detalhes */
+        .details-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .details-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: fadeInScale 0.3s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .details-content h3 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .details-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .details-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .details-info-row span {
+            font-weight: normal;
+            color: #555;
+        }
+
+        .details-info-row strong {
+            color: #333;
+            text-align: right;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.8em;
+            color: #777;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header .company-info {
+                margin-bottom: 10px;
+            }
+
+            .logout-btn {
+                width: 100%;
+                text-align: center;
+                margin-top: 10px;
+            }
+
+            .content-section, .personal-details-section {
+                padding: 20px;
+            }
+
+            .create-request-section, .notifications-section, .personal-details-section {
+                grid-column: 1 / -1; /* Ocupa toda a largura em telas pequenas */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="company-info">
+            <h1>UNIVAG</h1>
+            <h2>AgilizaRH - Portal do Funcionário</h2>
         </div>
-        {% else %}
-        <p class="no-requests">Nenhuma solicitação encontrada.</p>
-        {% endif %}
+        <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
     </div>
 
-    <!-- Seção de Nova Solicitação -->
-    <div class="nova-solicitacao">
-        <h2>Nova Solicitação</h2>
-        
-        <form class="solicitacao-form" method="POST" action="/enviar_solicitacao">
-            <div class="form-group">
-                <label for="tipo_solicitacao">Tipo de Solicitação</label>
-                <select id="tipo_solicitacao" name="tipo_solicitacao" required>
-                    <option value="">Selecione...</option>
-                    <option value="ferias">Solicitação de Férias</option>
-                    <option value="banco_horas">Apuração de Banco de Horas</option>
-                    <option value="abono_falta">Abono de Falta</option>
-                    <option value="rescisao">Solicitação de Rescisão</option>
-                    <option value="falta">Registro de Falta</option>
-                </select>
+    <div class="main-content">
+        <div class="main-column">
+            <div class="content-section create-request-section">
+                <h2>Abrir Nova Solicitação</h2>
+                <form id="newRequestForm" action="#" method="POST"> {# Lembre-se de adicionar o action URL real aqui #}
+                    <div class="form-group">
+                        <label for="requestType">Tipo de Solicitação:</label>
+                        <select id="requestType" name="requestType" required>
+                            <option value="">Selecione...</option>
+                            <option value="Ferias">Férias</option>
+                            <option value="Atestado">Atestado Médico</option>
+                            <option value="Declaracao">Declaração de Vínculo</option>
+                            <option value="Holerite">Segunda Via de Holerite</option>
+                            <option value="Progressao">Consulta de Progressão Salarial</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestDate">Data da Solicitação:</label>
+                        <input type="date" id="requestDate" name="requestDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestDetails">Detalhes da Solicitação:</label>
+                        <textarea id="requestDetails" name="requestDetails" rows="5" placeholder="Descreva sua solicitação com o máximo de detalhes." required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Enviar Solicitação</button>
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label for="data">Data</label>
-                <input type="date" id="data" name="data" required>
+
+            <div class="content-section notifications-section">
+                <h2>Respostas e Notificações Recentes</h2>
+                <div class="notifications-container">
+                    {% if solicitacoes_funcionario %}
+                        {% for solicitacao in solicitacoes_funcionario %}
+                        <div class="notification-item">
+                            <span class="notification-icon {% if solicitacao.status == 'Aprovado' %}success{% elif solicitacao.status == 'Pendente' %}warning{% else %}error{% endif %}">
+                                {% if solicitacao.status == 'Aprovado' %}✅{% elif solicitacao.status == 'Pendente' %}⏳{% else %}❌{% endif %}
+                            </span>
+                            <div class="notification-content">
+                                <p>Sua solicitação de **{{ solicitacao.tipo }}** em {{ solicitacao.data|datetimeformat }} foi <span class="status">{{ solicitacao.status }}</span>.</p>
+                                {% if solicitacao.observacao %}
+                                    <small>Obs: {{ solicitacao.observacao }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>Nenhuma notificação ou resposta de solicitação no momento.</p>
+                    {% endif %}
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label for="detalhes">Detalhes</label>
-                <textarea id="detalhes" name="detalhes" rows="4" required></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="anexo">Anexar Documento (Opcional)</label>
-                <input type="file" id="anexo" name="anexo">
-            </div>
-            
-            <button type="submit" class="submit-btn">Enviar Solicitação</button>
-        </form>
+        </div>
+
+        <div class="personal-details-section">
+            <h2>Suas Informações</h2>
+            <div class="profile-picture">👤</div>
+            <p>Acesse seus dados profissionais, salário, cargo e histórico.</p>
+            <button class="view-details-btn" id="openDetailsPopup">Ver Detalhes Completos</button>
+        </div>
     </div>
-</div>
-{% endblock %}
+
+    <div id="detailsPopup" class="details-popup">
+        <div class="details-content">
+            <span class="close-btn" id="closeDetailsPopup">&times;</span>
+            <h3>Dados Profissionais</h3>
+
+            <div class="details-info-row">
+                <span>Nome Completo:</span>
+                <strong>{{ funcionario.NOME_COMPLETO }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Cargo Atual:</span>
+                <strong>{{ funcionario.CARGO }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Departamento:</span>
+                <strong>{{ funcionario.DEPARTAMENTO }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Data de Admissão:</span>
+                <strong>{{ funcionario.DATAADMISSAO|datetimeformat }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Salário Base:</span>
+                <strong>{{ funcionario.SALARIO|currencyformat }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Próxima Progressão:</span>
+                <strong>{{ funcionario.PROXIMA_PROGRESSAO|default('N/A') }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Status de Recisão:</span>
+                <strong>{{ funcionario.STATUS_RECISAO|default('Não aplicável') }}</strong>
+            </div>
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const openPopupBtn = document.getElementById('openDetailsPopup');
+            const closePopupBtn = document.getElementById('closeDetailsPopup');
+            const detailsPopup = document.getElementById('detailsPopup');
+            const newRequestForm = document.getElementById('newRequestForm');
+
+            // Abrir o popup
+            openPopupBtn.addEventListener('click', function() {
+                detailsPopup.style.display = 'flex';
+            });
+
+            // Fechar o popup
+            closePopupBtn.addEventListener('click', function() {
+                detailsPopup.style.display = 'none';
+            });
+
+            // Fechar o popup clicando fora do conteúdo
+            detailsPopup.addEventListener('click', function(event) {
+                if (event.target === detailsPopup) {
+                    detailsPopup.style.display = 'none';
+                }
+            });
+
+            // Lidar com o envio do formulário de solicitação (apenas demonstração)
+            newRequestForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Impede o envio real do formulário para demonstração
+
+                const requestType = document.getElementById('requestType').value;
+                const requestDate = document.getElementById('requestDate').value;
+                const requestDetails = document.getElementById('requestDetails').value;
+
+                if (!requestType || !requestDate || !requestDetails) {
+                    alert('Por favor, preencha todos os campos da solicitação.');
+                    return;
+                }
+
+                alert('Solicitação de ' + requestType + ' enviada com sucesso! (Funcionalidade real de envio deve ser implementada no backend)');
+                // Aqui você enviaria os dados para o backend (ex: usando fetch API):
+                /*
+                fetch('/api/solicitacoes/criar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tipo: requestType,
+                        data: requestDate,
+                        detalhes: requestDetails
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    alert('Solicitação enviada com sucesso!');
+                    newRequestForm.reset(); // Limpa o formulário
+                    // Você pode também recarregar a lista de notificações ou adicionar a nova solicitação dinamicamente
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Erro ao enviar a solicitação. Tente novamente.');
+                });
+                */
+                newRequestForm.reset(); // Limpa os campos do formulário para demonstração
+            });
+        });
+    </script>
+</body>
+</html>

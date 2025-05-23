@@ -1,60 +1,319 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RHUnivag - {% block title %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-{% block content %}
-<div class="dashboard-container rh-dashboard">
-    <!-- Seção de Solicitações -->
-    <div class="solicitacoes-container">
-        <h2 class="section-title">Solicitações dos Funcionários</h2>
-        
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Funcionário</th>
-                    <th>Tipo</th>
-                    <th>Data</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for solicitacao in solicitacoes %}
-                <tr>
-                    <td>{{ solicitacao.funcionario }}</td>
-                    <td>{{ solicitacao.tipo }}</td>
-                    <td>{{ solicitacao.data|datetimeformat }}</td>
-                    <td>
-                        <span class="status-badge status-{{ solicitacao.status|lower }}">
-                            {{ solicitacao.status }}
-                        </span>
-                    </td>
-                    <td>
-                        <a href="#" class="action-link">Ver</a>
-                        <a href="#" class="action-link">Editar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove a classe 'active' de todos os itens do menu
+                navItems.forEach(nav => nav.classList.remove('active'));
+                // Adiciona a classe 'active' ao item clicado
+                this.classList.add('active');
 
-    <!-- Seção de Lembretes de Férias -->
-    <div class="ferias-container">
-        <h2 class="section-title">Lembretes de Férias</h2>
-        
-        {% for funcionario in funcionarios_ferias %}
-        <div class="ferias-card {% if funcionario.dias_restantes < 15 %}urgente{% endif %}">
-            <h4>{{ funcionario.Nome }}</h4>
-            <p>Próximas férias: {{ funcionario.ProximasFerias|datetimeformat }}</p>
-            <p class="dias-restantes">
-                {% if funcionario.dias_restantes > 0 %}
-                    {{ funcionario.dias_restantes }} dias restantes
-                {% else %}
-                    Férias vencidas!
-                {% endif %}
-            </p>
-            <button class="small-btn">Processar Pagamento</button>
+                // Esconde todas as abas de conteúdo
+                tabContents.forEach(tab => tab.classList.remove('active'));
+
+                // Mostra a aba correspondente ao item clicado
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    });
+</script>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f7f6;
+    }
+
+    .header {
+        background-color: #2c3e50; /* Azul escuro */
+        color: #ecf0f1; /* Branco leve */
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .header .company-info h1 {
+        margin: 0;
+        font-size: 2em;
+        font-weight: bold;
+    }
+
+    .header .company-info h2 {
+        margin: 5px 0 0;
+        font-size: 1.2em;
+        color: #95a5a6; /* Cinza claro */
+    }
+
+    .main-content {
+        display: flex;
+        padding-top: 80px; /* Espaço para o cabeçalho fixo */
+        height: calc(100vh - 80px); /* Altura restante da tela */
+    }
+
+    .sidebar {
+        width: 250px;
+        background-color: #34495e; /* Azul médio */
+        color: #ecf0f1;
+        padding: 20px 0;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0; /* Impede que a sidebar encolha */
+        overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+    }
+
+    .nav-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav-item {
+        padding: 15px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        border-bottom: 1px solid #4a627a; /* Linha divisória sutil */
+    }
+
+    .nav-item:hover, .nav-item.active {
+        background-color: #2c3e50; /* Azul escuro no hover/ativo */
+        color: #ffffff;
+    }
+
+    .dashboard-container {
+        flex-grow: 1; /* Ocupa o restante do espaço */
+        padding: 30px;
+        overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+        background-color: #f8f9fa; /* Fundo mais claro para a área de conteúdo */
+    }
+
+    .tab-content {
+        display: none; /* Esconde todas as abas por padrão */
+    }
+
+    .tab-content.active {
+        display: block; /* Mostra a aba ativa */
+    }
+
+    /* Estilos existentes (mantidos e ligeiramente ajustados para harmonização) */
+    .section-title {
+        color: #333;
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3498db; /* Azul vibrante */
+        padding-bottom: 10px;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .data-table th, .data-table td {
+        border: 1px solid #ddd;
+        padding: 12px 15px;
+        text-align: left;
+    }
+
+    .data-table th {
+        background-color: #ecf0f1; /* Cinza claro */
+        color: #333;
+        font-weight: bold;
+    }
+
+    .data-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .data-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .status-badge.status-pendente { background-color: #f39c12; } /* Laranja */
+    .status-badge.status-aprovado { background-color: #27ae60; } /* Verde */
+    .status-badge.status-rejeitado { background-color: #e74c3c; } /* Vermelho */
+    .status-badge.status-concluido { background-color: #3498db; } /* Azul */
+
+
+    .action-link {
+        color: #3498db;
+        text-decoration: none;
+        margin-right: 10px;
+    }
+
+    .action-link:hover {
+        text-decoration: underline;
+    }
+
+    .ferias-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .ferias-card h4 {
+        margin-top: 0;
+        color: #333;
+        font-size: 1.3em;
+    }
+
+    .ferias-card p {
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .ferias-card .dias-restantes {
+        font-weight: bold;
+        color: #2ecc71; /* Verde para dias restantes */
+    }
+
+    .ferias-card.urgente .dias-restantes {
+        color: #e74c3c; /* Vermelho para urgente */
+    }
+
+    .small-btn {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .small-btn:hover {
+        background-color: #2980b9;
+    }
+</style>
+<body>
+    <div class="header">
+        <div class="company-info">
+            <h1>UNIVAG</h1>
+            <h2>AgilizaRH</h2>
         </div>
-        {% endfor %}
     </div>
-</div>
-{% endblock %}
+
+    <div class="main-content">
+        <div class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="solicitacoes">Solicitações</li>
+                <li class="nav-item" data-tab="ferias">Férias</li>
+                <li class="nav-item" data-tab="atestados">Atestados</li>
+                <li class="nav-item" data-tab="folha-pagamento">Folha de Pagamento</li>
+                <li class="nav-item" data-tab="salarios">Salários</li>
+            </ul>
+        </div>
+
+        <div class="dashboard-container rh-dashboard">
+            <div id="solicitacoes" class="tab-content active">
+                <div class="solicitacoes-container">
+                    <h2 class="section-title">Solicitações dos Funcionários</h2>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Funcionário</th>
+                                <th>Tipo</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for solicitacao in solicitacoes %}
+                            <tr>
+                                <td>{{ solicitacao.funcionario }}</td>
+                                <td>{{ solicitacao.tipo }}</td>
+                                <td>{{ solicitacao.data|datetimeformat }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ solicitacao.status|lower }}">
+                                        {{ solicitacao.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="#" class="action-link">Ver</a>
+                                    <a href="#" class="action-link">Editar</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="ferias" class="tab-content">
+                <div class="ferias-container">
+                    <h2 class="section-title">Lembretes de Férias</h2>
+
+                    {% for funcionario in funcionarios_ferias %}
+                    <div class="ferias-card {% if funcionario.dias_restantes < 15 %}urgente{% endif %}">
+                        <h4>{{ funcionario.Nome }}</h4>
+                        <p>Próximas férias: {{ funcionario.ProximasFerias|datetimeformat }}</p>
+                        <p class="dias-restantes">
+                            {% if funcionario.dias_restantes > 0 %}
+                                {{ funcionario.dias_restantes }} dias restantes
+                            {% else %}
+                                Férias vencidas!
+                            {% endif %}
+                        </p>
+                        <button class="small-btn">Processar Pagamento</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="atestados" class="tab-content">
+                <div class="atestados-container">
+                    <h2 class="section-title">Atestados Médicos</h2>
+                    <p>Aqui você verá os detalhes e as solicitações de atestados médicos.</p>
+                    </div>
+            </div>
+
+            <div id="folha-pagamento" class="tab-content">
+                <div class="folha-pagamento-container">
+                    <h2 class="section-title">Geração e Consulta de Folhas de Pagamento</h2>
+                    <p>Nesta seção, você poderá gerar e consultar as folhas de pagamento dos funcionários.</p>
+                    </div>
+            </div>
+
+            <div id="salarios" class="tab-content">
+                <div class="salarios-container">
+                    <h2 class="section-title">Gestão de Salários</h2>
+                    <p>Gerencie informações salariais e reajustes nesta área.</p>
+                    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
