@@ -10,34 +10,68 @@
     document.addEventListener('DOMContentLoaded', function() {
         const navItems = document.querySelectorAll('.nav-item');
         const tabContents = document.querySelectorAll('.tab-content');
+        const modal = document.getElementById('requestModal');
+        const closeModal = document.querySelector('.close-button');
+        const actionLinks = document.querySelectorAll('.action-link-view'); // Select new view links
 
         navItems.forEach(item => {
             item.addEventListener('click', function() {
-                // Remove a classe 'active' de todos os itens do menu
                 navItems.forEach(nav => nav.classList.remove('active'));
-                // Adiciona a classe 'active' ao item clicado
                 this.classList.add('active');
 
-                // Esconde todas as abas de conteúdo
                 tabContents.forEach(tab => tab.classList.remove('active'));
 
-                // Mostra a aba correspondente ao item clicado
                 const tabId = this.getAttribute('data-tab');
                 document.getElementById(tabId).classList.add('active');
             });
+        });
+
+        // Open modal when "Ver" is clicked
+        actionLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                // In a real application, you'd fetch the request details here
+                // For this example, we'll populate with dummy data or from the table row
+                const row = this.closest('tr');
+                const funcionario = row.cells[0].innerText;
+                const tipo = row.cells[1].innerText;
+                const data = row.cells[2].innerText;
+                const status = row.cells[3].innerText;
+
+                document.getElementById('modal-funcionario').innerText = funcionario;
+                document.getElementById('modal-tipo').innerText = tipo;
+                document.getElementById('modal-data').innerText = data;
+                document.getElementById('modal-status').innerText = status;
+                document.getElementById('modal-details-content').innerText = `Detalhes adicionais para a solicitação de ${tipo} de ${funcionario}.`;
+
+
+                modal.style.display = 'block';
+            });
+        });
+
+        // Close modal when 'x' is clicked
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
         });
     });
 </script>
 <style>
     body {
         margin: 0;
-        font-family: Arial, sans-serif;
+        font-family: 'Roboto', Arial, sans-serif;
         background-color: #f4f7f6;
     }
 
     .header {
-        background-color: #2c3e50; /* Azul escuro */
-        color: #ecf0f1; /* Branco leve */
+        background-color: #2c3e50; /* Dark Blue */
+        color: #ecf0f1; /* Light White */
         padding: 15px 20px;
         display: flex;
         align-items: center;
@@ -59,23 +93,23 @@
     .header .company-info h2 {
         margin: 5px 0 0;
         font-size: 1.2em;
-        color: #95a5a6; /* Cinza claro */
+        color: #95a5a6; /* Light Gray */
     }
 
     .main-content {
         display: flex;
-        padding-top: 80px; /* Espaço para o cabeçalho fixo */
-        height: calc(100vh - 80px); /* Altura restante da tela */
+        padding-top: 80px; /* Space for the fixed header */
+        height: calc(100vh - 80px); /* Remaining screen height */
     }
 
     .sidebar {
         width: 250px;
-        background-color: #34495e; /* Azul médio */
+        background-color: #34495e; /* Medium Blue */
         color: #ecf0f1;
         padding: 20px 0;
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        flex-shrink: 0; /* Impede que a sidebar encolha */
-        overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+        flex-shrink: 0; /* Prevents sidebar from shrinking */
+        overflow-y: auto; /* Adds scroll if content is too large */
     }
 
     .nav-menu {
@@ -88,35 +122,35 @@
         padding: 15px 20px;
         cursor: pointer;
         transition: background-color 0.3s ease;
-        border-bottom: 1px solid #4a627a; /* Linha divisória sutil */
+        border-bottom: 1px solid #4a627a; /* Subtle divider line */
     }
 
     .nav-item:hover, .nav-item.active {
-        background-color: #2c3e50; /* Azul escuro no hover/ativo */
+        background-color: #2c3e50; /* Dark blue on hover/active */
         color: #ffffff;
     }
 
     .dashboard-container {
-        flex-grow: 1; /* Ocupa o restante do espaço */
+        flex-grow: 1; /* Occupies remaining space */
         padding: 30px;
-        overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
-        background-color: #f8f9fa; /* Fundo mais claro para a área de conteúdo */
+        overflow-y: auto; /* Adds scroll if content is too large */
+        background-color: #f8f9fa; /* Lighter background for content area */
     }
 
     .tab-content {
-        display: none; /* Esconde todas as abas por padrão */
+        display: none; /* Hides all tabs by default */
     }
 
     .tab-content.active {
-        display: block; /* Mostra a aba ativa */
+        display: block; /* Shows the active tab */
     }
 
-    /* Estilos existentes (mantidos e ligeiramente ajustados para harmonização) */
+    /* Existing styles (maintained and slightly adjusted for harmonization) */
     .section-title {
         color: #333;
         font-size: 1.8em;
         margin-bottom: 20px;
-        border-bottom: 2px solid #3498db; /* Azul vibrante */
+        border-bottom: 2px solid #3498db; /* Vibrant Blue */
         padding-bottom: 10px;
     }
 
@@ -135,7 +169,7 @@
     }
 
     .data-table th {
-        background-color: #ecf0f1; /* Cinza claro */
+        background-color: #ecf0f1; /* Light Gray */
         color: #333;
         font-weight: bold;
     }
@@ -156,10 +190,10 @@
         color: #fff;
     }
 
-    .status-badge.status-pendente { background-color: #f39c12; } /* Laranja */
-    .status-badge.status-aprovado { background-color: #27ae60; } /* Verde */
-    .status-badge.status-rejeitado { background-color: #e74c3c; } /* Vermelho */
-    .status-badge.status-concluido { background-color: #3498db; } /* Azul */
+    .status-badge.status-pendente { background-color: #f39c12; } /* Orange */
+    .status-badge.status-aprovado { background-color: #27ae60; } /* Green */
+    .status-badge.status-rejeitado { background-color: #e74c3c; } /* Red */
+    .status-badge.status-concluido { background-color: #3498db; } /* Blue */
 
 
     .action-link {
@@ -194,11 +228,11 @@
 
     .ferias-card .dias-restantes {
         font-weight: bold;
-        color: #2ecc71; /* Verde para dias restantes */
+        color: #2ecc71; /* Green for remaining days */
     }
 
     .ferias-card.urgente .dias-restantes {
-        color: #e74c3c; /* Vermelho para urgente */
+        color: #e74c3c; /* Red for urgent */
     }
 
     .small-btn {
@@ -215,13 +249,100 @@
     .small-btn:hover {
         background-color: #2980b9;
     }
+
+    /* Modal Styles */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1001; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto; /* 10% from the top and centered */
+        padding: 30px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+        max-width: 600px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        position: relative;
+    }
+
+    .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .modal-actions button {
+        margin-right: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s ease;
+    }
+
+    .modal-actions .approve-btn {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    .modal-actions .approve-btn:hover {
+        background-color: #229a58;
+    }
+
+    .modal-actions .edit-btn {
+        background-color: #f39c12;
+        color: white;
+    }
+
+    .modal-actions .edit-btn:hover {
+        background-color: #e08e0b;
+    }
+
+    .modal-actions .reject-btn {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .modal-actions .reject-btn:hover {
+        background-color: #cc4232;
+    }
+
+    .modal-body p {
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        color: #444;
+    }
+
+    .modal-body strong {
+        color: #333;
+    }
 </style>
 <body>
     <div class="header">
         <div class="company-info">
             <h1>UNIVAG</h1>
-            <h2>AgilizaRH</h2>
+            <h2>AgilizaRH - Portal do RH</h2>
         </div>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
     </div>
 
     <div class="main-content">
@@ -244,29 +365,46 @@
                         <thead>
                             <tr>
                                 <th>Funcionário</th>
-                                <th>Tipo</th>
+                                <th>Tipo Solicitação</th>
                                 <th>Data</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for solicitacao in solicitacoes %}
                             <tr>
-                                <td>{{ solicitacao.funcionario }}</td>
-                                <td>{{ solicitacao.tipo }}</td>
-                                <td>{{ solicitacao.data|datetimeformat }}</td>
+                                <td>Ana.Silva</td>
+                                <td>Adiantamento Salarial</td>
+                                <td>20/05/2025</td>
                                 <td>
-                                    <span class="status-badge status-{{ solicitacao.status|lower }}">
-                                        {{ solicitacao.status }}
-                                    </span>
+                                    <span class="status-badge status-pendente">Pendente</span>
                                 </td>
                                 <td>
-                                    <a href="#" class="action-link">Ver</a>
-                                    <a href="#" class="action-link">Editar</a>
+                                    <a href="#" class="action-link action-link-view">Ver</a>
                                 </td>
                             </tr>
-                            {% endfor %}
+                            <tr>
+                                <td>Carlos.Mendes</td>
+                                <td>Declaração de Vínculo</td>
+                                <td>18/05/2025</td>
+                                <td>
+                                    <span class="status-badge status-aprovado">Aprovado</span>
+                                </td>
+                                <td>
+                                    <a href="#" class="action-link action-link-view">Ver</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Beatriz.Costa</td>
+                                <td>Vale Transporte</td>
+                                <td>15/05/2025</td>
+                                <td>
+                                    <span class="status-badge status-rejeitado">Rejeitado</span>
+                                </td>
+                                <td>
+                                    <a href="#" class="action-link action-link-view">Ver</a>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -274,22 +412,55 @@
 
             <div id="ferias" class="tab-content">
                 <div class="ferias-container">
-                    <h2 class="section-title">Lembretes de Férias</h2>
+                    <h2 class="section-title">Lembretes de Férias e Solicitações</h2>
 
-                    {% for funcionario in funcionarios_ferias %}
-                    <div class="ferias-card {% if funcionario.dias_restantes < 15 %}urgente{% endif %}">
-                        <h4>{{ funcionario.Nome }}</h4>
-                        <p>Próximas férias: {{ funcionario.ProximasFerias|datetimeformat }}</p>
-                        <p class="dias-restantes">
-                            {% if funcionario.dias_restantes > 0 %}
-                                {{ funcionario.dias_restantes }} dias restantes
-                            {% else %}
-                                Férias vencidas!
-                            {% endif %}
-                        </p>
+                    <div class="ferias-card">
+                        <h4>João Carlos</h4>
+                        <p>Próximas férias: 10/07/2025</p>
+                        <p class="dias-restantes">45 dias restantes</p>
                         <button class="small-btn">Processar Pagamento</button>
                     </div>
-                    {% endfor %}
+                    <div class="ferias-card urgente">
+                        <h4>Maria Antônia</h4>
+                        <p>Próximas férias: 05/06/2025</p>
+                        <p class="dias-restantes">10 dias restantes</p>
+                        <button class="small-btn">Processar Pagamento</button>
+                    </div>
+                    <div class="ferias-card">
+                        <h4>Pedro Souza</h4>
+                        <p>Próximas férias: 01/08/2025</p>
+                        <p class="dias-restantes">67 dias restantes</p>
+                        <button class="small-btn">Processar Pagamento</button>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 40px;">Solicitações de Férias</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Funcionário</th>
+                                <th>Período Solicitado</th>
+                                <th>Data da Solicitação</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Fernanda Lima</td>
+                                <td>01/07/2025 - 30/07/2025</td>
+                                <td>22/05/2025</td>
+                                <td><span class="status-badge status-pendente">Pendente</span></td>
+                                <td><a href="#" class="action-link action-link-view">Ver</a></td>
+                            </tr>
+                            <tr>
+                                <td>Roberto Gomes</td>
+                                <td>15/08/2025 - 14/09/2025</td>
+                                <td>20/05/2025</td>
+                                <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                                <td><a href="#" class="action-link action-link-view">Ver</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -297,23 +468,141 @@
                 <div class="atestados-container">
                     <h2 class="section-title">Atestados Médicos</h2>
                     <p>Aqui você verá os detalhes e as solicitações de atestados médicos.</p>
-                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Funcionário</th>
+                                <th>Período</th>
+                                <th>Tipo de Atestado</th>
+                                <th>Data de Envio</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mariana Santos</td>
+                                <td>20/05/2025 - 22/05/2025</td>
+                                <td>Gripe</td>
+                                <td>21/05/2025</td>
+                                <td><span class="status-badge status-pendente">Pendente</span></td>
+                                <td><a href="#" class="action-link action-link-view">Ver</a></td>
+                            </tr>
+                            <tr>
+                                <td>Paulo Oliveira</td>
+                                <td>17/05/2025 - 17/05/2025</td>
+                                <td>Consulta Odontológica</td>
+                                <td>17/05/2025</td>
+                                <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                                <td><a href="#" class="action-link action-link-view">Ver</a></td>
+                            </tr>
+                             <tr>
+                                <td>Juliana Almeida</td>
+                                <td>10/05/2025 - 15/05/2025</td>
+                                <td>Cirurgia</td>
+                                <td>11/05/2025</td>
+                                <td><span class="status-badge status-pendente">Pendente</span></td>
+                                <td><a href="#" class="action-link action-link-view">Ver</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="folha-pagamento" class="tab-content">
                 <div class="folha-pagamento-container">
                     <h2 class="section-title">Geração e Consulta de Folhas de Pagamento</h2>
                     <p>Nesta seção, você poderá gerar e consultar as folhas de pagamento dos funcionários.</p>
-                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mês/Ano</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Maio/2025</td>
+                                <td><span class="status-badge status-pendente">Em Processamento</span></td>
+                                <td><a href="#" class="action-link action-link-view">Ver Detalhes</a></td>
+                            </tr>
+                            <tr>
+                                <td>Abril/2025</td>
+                                <td><span class="status-badge status-concluido">Concluído</span></td>
+                                <td><a href="#" class="action-link action-link-view">Ver Relatório</a></td>
+                            </tr>
+                            <tr>
+                                <td>Março/2025</td>
+                                <td><span class="status-badge status-concluido">Concluído</span></td>
+                                <td><a href="#" class="action-link action-link-view">Ver Relatório</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="salarios" class="tab-content">
                 <div class="salarios-container">
                     <h2 class="section-title">Gestão de Salários</h2>
                     <p>Gerencie informações salariais e reajustes nesta área.</p>
-                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Funcionário</th>
+                                <th>Cargo</th>
+                                <th>Salário Base</th>
+                                <th>Último Reajuste</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>André Silva</td>
+                                <td>Analista RH</td>
+                                <td>R$ 4.500,00</td>
+                                <td>Janeiro/2025</td>
+                                <td><a href="#" class="action-link action-link-view">Ver Histórico</a></td>
+                            </tr>
+                            <tr>
+                                <td>Carla Dantas</td>
+                                <td>Gerente RH</td>
+                                <td>R$ 8.000,00</td>
+                                <td>Novembro/2024</td>
+                                <td><a href="#" class="action-link action-link-view">Ver Histórico</a></td>
+                            </tr>
+                             <tr>
+                                <td>Felipe Gomes</td>
+                                <td>Assistente RH</td>
+                                <td>R$ 3.000,00</td>
+                                <td>Março/2025</td>
+                                <td><a href="#" class="action-link action-link-view">Ver Histórico</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2 class="section-title">Detalhes da Solicitação</h2>
+            <div class="modal-body">
+                <p><strong>Funcionário:</strong> <span id="modal-funcionario"></span></p>
+                <p><strong>Tipo de Solicitação:</strong> <span id="modal-tipo"></span></p>
+                <p><strong>Data:</strong> <span id="modal-data"></span></p>
+                <p><strong>Status Atual:</strong> <span id="modal-status"></span></p>
+                <p><strong>Conteúdo:</strong> <span id="modal-details-content"></span></p>
+                </div>
+            <div class="modal-actions">
+                <button class="approve-btn">Aprovar</button>
+                <button class="edit-btn">Editar</button>
+                <button class="reject-btn">Recusar</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
