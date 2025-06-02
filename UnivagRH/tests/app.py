@@ -63,7 +63,7 @@ def login():
                 
                 # Carrega os dados do funcionário do CSV e armazena na sessão
                 try:
-                    df_funcionarios = pd.read_csv(r'.\tests\static\csv\FuncionarioBase.csv', sep=';')
+                    df_funcionarios = pd.read_csv(r'./UnivagRH/tests/static/csv/FuncionarioBase.csv', sep=';')
                     funcionario_data = df_funcionarios[df_funcionarios['ID'] == session['funcionario_id']].to_dict('records')
                     if funcionario_data:
                         session['funcionario_data'] = funcionario_data[0]
@@ -98,7 +98,7 @@ def painel_rh():
     
     try:
         # Carrega dados do CSV (mantido como no seu código original)
-        df = pd.read_csv(r'.\tests\static\csv\FuncionarioBase.csv', sep=';')
+        df = pd.read_csv(r'./UnivagRH/tests/static/csv/FuncionarioBase.csv', sep=';')
         
         # Processa solicitações (simulação - substitua por dados reais)
         solicitacoes = [
