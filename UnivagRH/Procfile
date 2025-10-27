@@ -1,1 +1,1 @@
-web: gunicorn tests.app:app --workers=2 --timeout=120 --log-file=-
+web: gunicorn UnivagRH.tests.app:app --workers=2 --timeout=120 --log-file=-
