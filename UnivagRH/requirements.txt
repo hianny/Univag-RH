@@ -30,5 +30,7 @@ typing_extensions==4.15.0
 tzdata==2025.2
 Werkzeug==2.0.3
 gunicorn==21.2.0
+python-dotenv==1.0.1
+
 
 
