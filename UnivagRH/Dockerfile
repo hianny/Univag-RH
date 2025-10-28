@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8080
 
 # Comando que inicia o servidor Flask via Gunicorn
-CMD ["gunicorn", "tests.app:app", "--workers=2", "--timeout=120", "--bind", "0.0.0.0:8080"]
+CMD ["sh", "-c", "gunicorn tests.app:app --workers=2 --timeout=120 --bind 0.0.0.0:${PORT:-8080}"]
