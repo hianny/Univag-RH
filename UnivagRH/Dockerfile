@@ -1,20 +1,20 @@
-# Usa a imagem oficial do Python
 FROM python:3.12-slim
 
-# Define o diretório de trabalho dentro do container
+# diretório raiz do projeto
 WORKDIR /app
 
-# Copia o arquivo de dependências
+# dependências
 COPY requirements.txt requirements.txt
-
-# Instala as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante do código
+# copia todo o código
 COPY . .
 
-# Expõe a porta usada pelo Railway
-EXPOSE 8080
+# >>> AQUI: trabalha dentro da pasta UnivagRH <<<
+WORKDIR /app/UnivagRH
 
-# Comando que inicia o servidor Flask via Gunicorn
-CMD ["sh", "-c", "gunicorn UnivagRH.tests.app:app --workers=2 --timeout=120 --bind 0.0.0.0:${PORT:-8080}"]
+# porta padrão do Railway
+ENV PORT=8080
+
+# start do Gunicorn apontando para tests/app.py
+CMD ["sh","-c","gunicorn tests.app:app --workers=1 --timeout=120 --bind 0.0.0.0:${PORT:-8080}"]
