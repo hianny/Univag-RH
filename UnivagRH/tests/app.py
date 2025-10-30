@@ -7,6 +7,31 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from sqlalchemy import create_engine, text
+
+# Função que constrói a URL do banco automaticamente
+def get_db_url():
+    url = os.getenv("DATABASE_URL")
+    if url:
+        # Ajusta o formato para o SQLAlchemy
+        if url.startswith("mysql://"):
+            url = "mysql+pymysql://" + url[len("mysql://"):]
+        return url
+
+    # alternativa se estiver usando variáveis separadas
+    host = os.getenv("MYSQLHOST")
+    user = os.getenv("MYSQLUSER", "root")
+    password = os.getenv("MYSQLPASSWORD", "")
+    database = os.getenv("MYSQLDATABASE", "railway")
+    port = os.getenv("MYSQLPORT", "3306")
+
+    return f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}"
+
+# Cria o objeto de conexão
+DB_URL = get_db_url()
+engine = create_engine(DB_URL, pool_pre_ping=True)
+
+
 app = Flask(__name__)
 app.secret_key = 'meurhunivag'
 
@@ -341,6 +366,16 @@ Posso ajudar com mais alguma coisa? 🤗"""
 def logout():
     session.clear() # Limpa todos os dados da sessão
     return redirect(url_for('login'))
+
+@app.route('/db-ping')
+def db_ping():
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT NOW()")).fetchone()
+        return {"ok": True, "server_time": str(result[0])}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}, 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=True)
