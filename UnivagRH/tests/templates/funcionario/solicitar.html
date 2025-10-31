@@ -1,0 +1,41 @@
+    {% extends "funcionario/main_page.html" %}
+
+    {% block stylesheets %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/funcionario/solicitar.css') }}">
+    {% endblock %}
+
+    {% block solicitar %}
+    <div class="content-section create-request-section">
+                <h2>Abrir Nova Solicitação</h2>
+                {% with errors = get_flashed_messages()  %}
+                    {% for error in errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endwith %}
+                <form id="newRequestForm" action="#" method="POST"> {# Lembre-se de adicionar o action URL real aqui #}
+                    <div class="form-group">
+                        <label for="requestType">Tipo de Solicitação:</label>
+                        <select id="requestType" name="requestType" required>
+                            <option value="">Selecione...</option>
+                            {% for tipo in tipos_solicitacao %}
+                                <option value="{{ tipo.id }}">{{ tipo.descricao }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestDate">Data da Solicitação:</label>
+                        <input type="date" id="requestDate" name="requestDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestDetails">Detalhes da Solicitação:</label>
+                        <textarea id="requestDetails" name="requestDetails" rows="5" placeholder="Descreva sua solicitação com o máximo de detalhes." required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Enviar Solicitação</button>
+                    <a href="{{ url_for('funcionario.painel') }}" class="cancel-btn">Cancelar</a>
+                </form>
+            </div>
+    {% endblock %}

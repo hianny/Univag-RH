@@ -1,41 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>RH</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+{% extends "base_template.html" %}
 
-</head>
-<body>
-    {% extends "base.html" %}
+{% block title %}Login{% endblock %}
 
-    {% block content %}
-    <div class="login-container">
-        <div class="login-header">
-            <h1>RH New Center</h1>
-            <p>Sistema de Recursos Humanos</p>
-        </div>
-        
-        {% if erro %}
-            <div class="error-message">{{ erro }}</div>
-        {% endif %}
-        
-        <form class="login-form" action="{{ url_for('login') }}" method="POST">
-            <div class="form-group">
-                <label for="username">Usuário</label>
-                <input type="text" id="username" name="username" placeholder="Digite seu usuário" class="rounded-input" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" placeholder="Digite sua senha" class="rounded-input" required>
-            </div>
-            
-            <button type="submit" class="login-button">Entrar</button>
-        </form>
+{% block content %}
+<div class="login-container">
+    <div class="login-header">
+        <h1>RH New Center</h1>
+        <p>Sistema de Recursos Humanos</p>
     </div>
-    {% endblock %}
-</body>
-</html>
+    {% with errors = get_flashed_messages()  %}
+        {% for error in errors %}
+            <div class="error-message">{{ error }}</div>
+        {% endfor %}
+    {% endwith %}
+    <form class="login-form" action="{{ url_for('auth.login') }}" method="POST">
+        <div class="form-group">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="username" placeholder="Digite seu usuário" class="rounded-input" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" placeholder="Digite sua senha" class="rounded-input" required>
+        </div>
+
+
+
+        <button type="submit" class="login-button">Entrar</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+/* --- Criar Nova Solicitação --- */
+        .create-request-section {
+            grid-column: 1 / 2; /* Ocupa a primeira coluna */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group select,
+        .form-group textarea,
+        .form-group input[type="date"] {
+            width: calc(100% - 22px); /* Ajusta a largura para padding e borda */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus,
+        .form-group input[type="date"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .submit-btn {
+            background-color: #27ae60; /* Verde para ação de enviar */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: auto; /* Ajusta a largura ao conteúdo */
+        }
+
+        .submit-btn:hover {
+            background-color: #229a56;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: auto; /* Ajusta a largura ao conteúdo */
+        }
+
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .create-request-section {
+                grid-column: 1 / -1; /* Ocupa toda a largura em telas pequenas */
+            }
+        }

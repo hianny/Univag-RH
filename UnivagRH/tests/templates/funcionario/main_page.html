@@ -1,0 +1,128 @@
+    {% extends "funcionario/funcionario_template.html" %}
+
+    {% block title %}{{ super() }}{% endblock %}
+
+    {% block stylesheets %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/funcionario/main_page.css') }}">
+    {% endblock %}
+
+    {% block content %}
+    {{ super() }}
+    <div class="main-content">
+        <div class="main-column">
+            {% block solicitar %}
+                <div class="content-section request-guidance">
+                    <span class="icon">💡</span>
+                    <p>
+                        Precisa de algo do RH? Você pode <a href='{{ url_for("funcionario.criar_solicitacao") }}'>fazer uma nova solicitação aqui</a> para férias, atestados, declarações e muito mais!
+                    </p>
+                </div>
+            {% endblock %}
+
+            <div class="content-section notifications-section">
+                <h2>Respostas e Notificações Recentes</h2>
+                <div class="notifications-container">
+                    {% if solicitacoes_funcionario %}
+                        {% for solicitacao in solicitacoes_funcionario %}
+                        <div class="notification-item">
+                            <span class="notification-icon {% if solicitacao.status == 'Aprovado' %}success{% elif solicitacao.status == 'Pendente' %}warning{% else %}error{% endif %}">
+                                {% if solicitacao.status == 'Aprovado' %}✅{% elif solicitacao.status == 'Pendente' %}⏳{% else %}❌{% endif %}
+                            </span>
+                            <div class="notification-content">
+                                <p>Sua solicitação de **{{ solicitacao.tipo }}** em {{ solicitacao.data|datetimeformat }} foi <span class="status">{{ solicitacao.status }}</span>.</p>
+                                {% if solicitacao.observacao %}
+                                    <small>Obs: {{ solicitacao.observacao }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>Nenhuma notificação ou resposta de solicitação no momento.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="personal-details-section">
+            <h2>Suas Informações</h2>
+            <div class="profile-picture">👤</div>
+            <p>Clique abaixo para ver seus detalhes profissionais completos.</p>
+            <button class="view-details-btn" id="openDetailsPopup">Ver Detalhes Completos</button>
+        
+            <h3>Assistente Virtual</h3>
+            <p>Tire suas duvidas com nosso assistente de IA</p>
+            <button onclick='window.location.href="{{ url_for("funcionario.chat_ia") }}"' class="view-details-btn">
+                Falar com o Assistente
+            </button>
+        </div>
+    </div>
+
+    <div id="detailsPopup" class="details-popup">
+        <div class="details-content">
+            <span class="close-btn" id="closeDetailsPopup">&times;</span>
+            <h3>Dados Profissionais</h3>
+
+            <div class="details-info-row">
+                <span>Nome Completo:</span>
+                <strong>{{ funcionario.NOME_COMPLETO }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Cargo Atual:</span>
+                <strong>{{ funcionario.CARGO }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Departamento:</span>
+                <strong>{{ funcionario.DEPARTAMENTO }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Data de Admissão:</span>
+                <strong>{{ funcionario.DATAADMISSAO|datetimeformat }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Salário Base:</span>
+                <strong>{{ funcionario.SALARIO|currencyformat }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Próxima Progressão:</span>
+                <strong>{{ funcionario.PROXIMA_PROGRESSAO|default('N/A') }}</strong>
+            </div>
+            <div class="details-info-row">
+                <span>Status de Recisão:</span>
+                <strong>{{ funcionario.STATUS_RECISAO|default('Não aplicável') }}</strong>
+            </div>
+            {# Adicione mais detalhes conforme necessário #}
+        </div>
+    </div>
+
+    {% endblock %}
+
+    {% block scripts %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const openPopupBtn = document.getElementById('openDetailsPopup');
+                const closePopupBtn = document.getElementById('closeDetailsPopup');
+                const detailsPopup = document.getElementById('detailsPopup');
+
+                // Abrir o popup
+                openPopupBtn.addEventListener('click', function() {
+                    detailsPopup.style.display = 'flex'; // Torna o popup visível
+                });
+
+                // Fechar o popup
+                closePopupBtn.addEventListener('click', function() {
+                    detailsPopup.style.display = 'none'; // Esconde o popup
+                });
+
+                // Fechar o popup clicando fora do conteúdo
+                detailsPopup.addEventListener('click', function(event) {
+                    if (event.target === detailsPopup) {
+                        detailsPopup.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+    {% endblock %}
+
+    {% block scripts_solicitar %}{% endblock %}

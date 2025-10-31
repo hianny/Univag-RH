@@ -1,0 +1,47 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+    background-color: #2c3e50; /* Azul escuro */
+    color: #ecf0f1; /* Branco leve */
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky; /* Sticky para fixar no topo ao rolar */
+    top: 0;
+    z-index: 1000;
+}
+
+.header .company-info h1 {
+    margin: 0;
+    font-size: 2.2em;
+    font-weight: bold;
+    color: #3498db; /* Azul vibrante para o nome da empresa */
+}
+
+.header .company-info h2 {
+    margin: 5px 0 0;
+    font-size: 1.3em;
+    color: #95a5a6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header .company-info {
+        margin-bottom: 10px;
+    }
+
+    .logout-btn {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+}

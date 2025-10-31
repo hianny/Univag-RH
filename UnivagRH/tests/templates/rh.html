@@ -342,7 +342,7 @@
             <h1>UNIVAG</h1>
             <h2>AgilizaRH - Portal do RH</h2>
         </div>
-        <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
+        <a href="{{ url_for('auth.logout') }}" class="logout-btn">Sair</a>
     </div>
 
     <div class="main-content">
@@ -360,8 +360,8 @@
             <div id="solicitacoes" class="tab-content active">
                 <div class="solicitacoes-container">
                     <h2 class="section-title">Solicitações dos Funcionários</h2>
-
-                    <table class="data-table">
+                    {% if solicitacoes %}
+                        <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Funcionário</th>
@@ -372,41 +372,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Hianny.urt</td>
-                                <td>Ferias</td>
-                                <td>26/06/2025</td>
-                                <td>
-                                    <span class="status-badge status-pendente">Pendente</span>
-                                </td>
-                                <td>
-                                    <a href="#" class="action-link action-link-view">Ver</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Carlos.Mendes</td>
-                                <td>Declaração de Vínculo</td>
-                                <td>18/05/2025</td>
-                                <td>
-                                    <span class="status-badge status-aprovado">Aprovado</span>
-                                </td>
-                                <td>
-                                    <a href="#" class="action-link action-link-view">Ver</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Beatriz.Costa</td>
-                                <td>Vale Transporte</td>
-                                <td>15/05/2025</td>
-                                <td>
-                                    <span class="status-badge status-rejeitado">Rejeitado</span>
-                                </td>
-                                <td>
-                                    <a href="#" class="action-link action-link-view">Ver</a>
-                                </td>
-                            </tr>
+                            {% for solicitacao in solicitacoes %}
+                                <tr>
+                                    <td>{{ solicitacao.funcionario }}</td>
+                                    <td>{{ solicitacao.tipo }}</td>
+                                    <td>{{ solicitacao.data }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ solicitacao.status.lower() }}">{{ solicitacao.status }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="action-link action-link-view">Ver</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
+                    {% else %}
+                        Ainda não há notificações a serem exibidas.
+                    {% endif %}
                 </div>
             </div>
 

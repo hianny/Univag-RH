@@ -1,0 +1,19 @@
+{% extends "base_template.html" %}
+
+{% block title %}Portal do Funcionário{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/funcionario/style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <div class="company-info">
+            <h1>New Center</h1>
+            <h2>AgilizaRH - Portal do Funcionário</h2>
+        </div>
+        {% block back_btn %}<a href="{{ url_for('auth.logout') }}" class="logout-btn">Sair</a>{% endblock %}
+    </div>
+{% endblock %}
+
+{% block scripts %}{% endblock %}
