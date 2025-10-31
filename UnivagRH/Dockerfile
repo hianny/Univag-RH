@@ -17,4 +17,5 @@ WORKDIR /app
 ENV PORT=8080
 
 # start do Gunicorn apontando para tests/app.py
-CMD ["sh","-c","gunicorn tests.app:app --workers=1 --timeout=120 --bind 0.0.0.0:${PORT:-8080}"]
+CMD ["sh", "-c", "gunicorn UnivagRH.tests.app:app --workers=1 --timeout=120 --bind 0.0.0.0:${PORT:-8080}"]
+
