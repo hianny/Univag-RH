@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # >>> AQUI: trabalha dentro da pasta UnivagRH <<<
-WORKDIR /app/UnivagRH
+WORKDIR /app
 
 # porta padrão do Railway
 ENV PORT=8080
