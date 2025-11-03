@@ -14,7 +14,7 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 jiter==0.11.1
 MarkupSafe==3.0.3
-numpy==2.3.4
+numpy==1.26.2
 openai==2.6.1
 p==1.5.0
 pandas==2.3.3
@@ -33,6 +33,7 @@ gunicorn==21.2.0
 python-dotenv==1.0.1
 SQLAlchemy==2.0.36
 PyMySQL==1.1.1
+
 
 
 
