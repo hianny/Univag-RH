@@ -6,4 +6,4 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["gunicorn", "univagrh.app:app", "--workers=1", "--bind=0.0.0.0:8080"]
+CMD ["python", "tests/app.py"]
