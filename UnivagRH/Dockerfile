@@ -17,7 +17,7 @@ COPY . .
 EXPOSE 8080
 
 # Comando que reseta o banco de dados
-CMD ["python", "./tests/reset_database.py"]
+CMD ["python", "./reset_database.py"]
 
 # Comando que inicia o servidor Flask via Gunicorn
 CMD ["sh", "-c", "gunicorn tests.app:app --workers=2 --timeout=120 --bind 0.0.0.0:${PORT:-8080}"]
