@@ -1,7 +1,7 @@
 from werkzeug.security import generate_password_hash
 from tests.ext.database import db
 from tests.app import create_app
-from models import Usuario, Funcionarios, UsuariosDetalhes, TipoSolicitacao
+from tests.models import Usuario, Funcionarios, UsuariosDetalhes, TipoSolicitacao
 
 def recriar_banco():
 
@@ -67,7 +67,6 @@ def recriar_banco():
 
         db.session.commit()
         print("✅ Dados iniciais criados com sucesso!")
-
 
 if __name__ == '__main__':
     recriar_banco()
